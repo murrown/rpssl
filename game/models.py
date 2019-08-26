@@ -28,7 +28,7 @@ RESULT_NAMES = {
 
 class Game(models.Model):
     """
-    The Game model stores information about a single game of RPSSL
+    The Game model stores information about a single game of RPSSL.
     """
     player = models.ForeignKey(
         User, null=True, on_delete=models.SET_NULL, db_index=True)
@@ -47,7 +47,7 @@ class Game(models.Model):
 
     def get_response(self):
         """
-        Reports the results of this round of the game.
+        Reports the results of this round of the game, for the client or API.
 
         @return: a data dictionary containing the results for the round,
             suitable for JSON serialization.
@@ -65,6 +65,11 @@ class Game(models.Model):
                 'computer': self.computer_choice}
 
     def get_record(self):
+        """
+        Generate a record for this object suitable for the scoreboard view.
+
+        @return: Data dictionary containing information about this object.
+        """
         data = self.get_response()
         data['results'] = data['results'].upper()
         data['player'] = CHOICE_NAMES[data['player']]
@@ -76,6 +81,10 @@ class Game(models.Model):
         return data
 
     def save(self, *args, **kwargs):
+        """
+        A custom save method for this model automatically
+        fills in the history fields.
+        """
         history = [g.player_choice for g in Game.objects.filter(
             player=self.player).order_by("-created")[:3]]
         while len(history) < 3:

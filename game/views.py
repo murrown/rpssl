@@ -151,6 +151,9 @@ def post_play(request):
     return JsonResponse(g.get_response())
 
 def register(request):
+    """
+    Render the registration view.
+    """
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -166,10 +169,16 @@ def register(request):
     return HttpResponse(template.render({'form': form}, request))
 
 def index(request):
+    """
+    Render the main gameplay view.
+    """
     context = {}
     return render(request, "index.html", context=context)
 
 def scoreboard(request):
+    """
+    Render the scoreboard view.
+    """
     games = [g.get_record() for g in Game.objects.order_by("-created")[:10]]
     for i, g in enumerate(games):
         g['index'] = i
