@@ -34,7 +34,8 @@ GET | /choice/ | | Get a random choice from the server.
 POST | /play/ | :heavy_check_mark: | Submit a choice to play a round with the server.
 
 #### /choices/
-No POST data required.
+Example request:
+```curl -w "\n" -X GET "127.0.0.1:8000/choices"```
 
 Response:
 ```
@@ -47,7 +48,8 @@ Response:
 ]
 ```
 #### /choice/
-No POST data required.
+Example request:
+```curl -w "\n" -X GET "127.0.0.1:8000/choice"```
 
 Response:
 ```
@@ -58,6 +60,9 @@ Response:
 }
 ```
 #### /play/
+Example request:
+```curl -w "\n" -X POST "127.0.0.1:8000/play" --data '{"player": 1}'```
+
 POST data:
 ```
 {"player": [Numerical value of your choice],
