@@ -74,6 +74,8 @@ def get_computer_choice(player=None):
     """
     if player is None:
         return get_random_choice()
+    else:
+        return get_random_choice()
 
 def post_play(request):
     """
