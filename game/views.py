@@ -130,3 +130,9 @@ def register(request):
 def index(request):
     context = {}
     return render(request, "index.html", context=context)
+
+def scoreboard(request):
+    games = [g.get_record() for g in Game.objects.order_by("-created")[:10]]
+    for i, g in enumerate(games):
+        g['index'] = i
+    return render(request, "scoreboard.html", context={'games': games})

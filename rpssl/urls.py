@@ -1,7 +1,8 @@
 from django.conf.urls import include, url
 from django.urls import re_path
 from django.contrib.auth import views as auth_views
-from game.views import get_choices, get_choice, post_play, register, index
+from game.views import (get_choices, get_choice, post_play,
+                        register, index, scoreboard)
 
 urlpatterns = [
     re_path(r'^choices/?$', get_choices),
@@ -12,4 +13,5 @@ urlpatterns = [
             {"login_url": "/login/"}, name='logout'),
     re_path(r'^register/$', register, name='register'),
     re_path(r'^$', index),
+    re_path(r'^scoreboard/$', scoreboard),
 ]

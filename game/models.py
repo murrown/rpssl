@@ -53,3 +53,14 @@ class Game(models.Model):
         return {'results': results,
                 'player': self.player_choice,
                 'computer': self.computer_choice}
+
+    def get_record(self):
+        data = self.get_response()
+        data['results'] = data['results'].upper()
+        data['player'] = CHOICE_NAMES[data['player']]
+        data['computer'] = CHOICE_NAMES[data['computer']]
+        if self.player is None:
+            data['player_name'] = 'ANONYMOUS PLAYER'
+        else:
+            data['player_name'] = self.player.username
+        return data

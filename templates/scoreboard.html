@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static from staticfiles %}
+
+{% block content %}
+<p>This scoreboard shows the 10 most recent results, from newest to oldest.</p>
+<table border=2 cellpadding=5>
+    <b>
+    <td>Player Name</td>
+    <td>Player Choice</td>
+    <td>Computer Choice</td>
+    <td>Result</td>
+    </b>
+{% for game in games %}
+<tr>
+    <td>{{game.player_name}}</td>
+    <td>{{game.player}}</td>
+    <td>{{game.computer}}</td>
+    <td>{{game.results}}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

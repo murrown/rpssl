@@ -27,13 +27,14 @@ wrapper {
         <h1>RPSSL</h1>
         <h5>Rock, Paper, Scissors, Spock, Lizard</h5>
         <a href="/" class="btn btn-primary">Home</a>
+        <a href="/scoreboard/" class="btn btn-primary">Scoreboard</a>
         {# {% if user.pk %} #}
         {% if user.is_authenticated %}
-            <a href="/logout" class="btn btn-primary">Logout</a>
+            <a href="/logout/" class="btn btn-primary">Logout</a>
             Hello, <b>{{ user.username }}</b>.
         {% else %}
-            <a href="/login" class="btn btn-primary">Login</a>
-            <a href="/register" class="btn btn-primary">Register</a>
+            <a href="/login/" class="btn btn-primary">Login</a>
+            <a href="/register/" class="btn btn-primary">Register</a>
             Hello, <b>Guest</b>.
         {% endif %}
     </div>
