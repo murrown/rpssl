@@ -26,7 +26,7 @@ Method | URI | Accepts Data | Purpose
 ------ | --- | ------------ | -------
 GET | /choices/ | | Get a list of valid choices and their numerical values.
 GET | /choice/ | | Get a random choice from the server.
-POST | /play/ | :heavy_check_mark: |  | Submit a choice to play a round with the server.
+POST | /play/ | :heavy_check_mark: | Submit a choice to play a round with the server.
 
 #### /choices/
 No POST data required.
