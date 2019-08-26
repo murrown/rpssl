@@ -30,10 +30,20 @@ class Game(models.Model):
     """
     The Game model stores information about a single game of RPSSL
     """
-    player = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    player = models.ForeignKey(
+        User, null=True, on_delete=models.SET_NULL, db_index=True)
     player_choice = models.IntegerField(default=0, null=False)
+    history1 = models.IntegerField(default=0, null=False)
+    history2 = models.IntegerField(default=0, null=False)
+    history3 = models.IntegerField(default=0, null=False)
     computer_choice = models.IntegerField(default=0, null=False)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        index_together = [("player", "history1", "history2", "history3"),
+                          ("history1", "history2", "history3"),
+                          ("player", "created"),
+                         ]
 
     def get_response(self):
         """
@@ -64,3 +74,11 @@ class Game(models.Model):
         else:
             data['player_name'] = self.player.username
         return data
+
+    def save(self, *args, **kwargs):
+        history = [g.player_choice for g in Game.objects.filter(
+            player=self.player).order_by("-created")[:3]]
+        while len(history) < 3:
+            history.append(0)
+        self.history1, self.history2, self.history3 = history
+        super(Game, self).save(*args, **kwargs)

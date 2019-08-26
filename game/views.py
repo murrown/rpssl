@@ -2,6 +2,7 @@ import json
 from requests import get
 from random import randint
 from time import sleep
+from collections import Counter
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login
@@ -11,7 +12,7 @@ from django.http import (
         JsonResponse, HttpResponseBadRequest)
 from django.shortcuts import render
 from django.template import loader
-from game.models import CHOICE_NAMES, Game
+from game.models import CHOICE_NAMES, VICTORY_MAP, Game
 
 
 RNG_URI = 'https://codechallenge.boohma.com/random'
@@ -33,12 +34,12 @@ def get_choices(request):
         response.append({"choice": {"id": choice_id, "name": choice_name}})
     return JsonResponse(response, safe=False)
 
-def get_random_choice():
+def get_random_number():
     """
-    Generate a random number that is a valid choice for an action in the game.
-    Attempts to use an external API if configured to do so.
+    Generate a random number between 1 and 100. Retrieves from an external API
+    if configured to do so.
 
-    @return: An integer between 1 and 5 representing a gameplay choice.
+    @return: A random integer between 1 and 100.
     """
     if settings.USE_RNG_API:
         for _ in range(NUM_TIMEOUT_RETRIES):
@@ -48,8 +49,16 @@ def get_random_choice():
             except KeyError:
                 sleep(1)
                 continue
-            return (value % 5) + 1
-    return randint(1, 5)
+            return value
+    return randint(1, 100)
+
+def get_random_choice():
+    """
+    Generate a random number that is a valid choice for an action in the game.
+
+    @return: An integer between 1 and 5 representing a gameplay choice.
+    """
+    return (get_random_number() % 5) + 1
 
 def get_choice(request):
     """
@@ -68,14 +77,43 @@ def get_choice(request):
 def get_computer_choice(player=None):
     """
     Choose an action for the computer in a round of the game.
+    Plays intelligently using past knowledge.
 
     @param player: The user object for the player. Currently unused.
     @return: An integer between 1 and 5 representing a gameplay choice.
     """
-    if player is None:
-        return get_random_choice()
+    games = Game.objects.filter(player=player).order_by("-created")
+    recent = [g.player_choice for g in games[:3]]
+    while len(recent) < 3:
+        recent.append(0)
+    history1, history2, history3 = recent
+    games = Game.objects.filter(
+        player=player, history1=history1, history2=history2, history3=history3)
+    if games.count() == 0:
+        games = Game.objects.filter(
+            history1=history1, history2=history2, history3=history3)
+        if games.count() == 0:
+            return get_random_choice()
+
+    next_choices = Counter([g.player_choice for g in games])
+    win_ratio = {}
+    for computer_choice in sorted(VICTORY_MAP):
+        wins, losses = 1, 1
+        for player_choice in sorted(next_choices):
+            if player_choice in VICTORY_MAP[computer_choice]:
+                wins += next_choices[player_choice]
+            elif computer_choice in VICTORY_MAP[player_choice]:
+                losses += next_choices[player_choice]
+        win_ratio[computer_choice] = wins / float(wins + losses)
+
+    highest = max(win_ratio.values())
+    options = sorted([c for c in win_ratio if win_ratio[c] == highest])
+    if len(options) > 1:
+        chosen = options[get_random_number() % len(options)]
     else:
-        return get_random_choice()
+        chosen = options[0]
+
+    return chosen
 
 def post_play(request):
     """
