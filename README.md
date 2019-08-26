@@ -80,7 +80,7 @@ To test the client, navigate your web browser to 127.0.0.1:8000 while the server
 ### Home
 You can play the game on the homepage. The gameplay page is a single-page app without refreshes.
 
-Select any button to make your play. The computer opponent will make its own selection and the results of the round will be displayed.
+Select any button to make your play. You can use the hotkeys `r`, `s`, `p`, `o`, and `l` to play using the keyboard. The computer opponent will make its own selection and the results of the round will be displayed.
 
 The more you play against the computer, the better it will get at predicting your actions. (NOTE: Because the database is stored in memory, the computer's knowledge is not persistent and will be erased as soon as you shut down the server.)
 
