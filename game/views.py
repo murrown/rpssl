@@ -4,9 +4,13 @@ from random import randint
 from time import sleep
 
 from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import UserCreationForm
 from django.http import (
+        HttpResponse, HttpResponseRedirect,
         JsonResponse, HttpResponseBadRequest)
 from django.shortcuts import render
+from django.template import loader
 from game.models import CHOICE_NAMES, Game
 
 
@@ -105,3 +109,22 @@ def post_play(request):
                             computer_choice=computer_choice)
 
     return JsonResponse(g.get_response())
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            new_user = authenticate(username=request.POST["username"],
+                                    password=request.POST["password1"])
+            login(request, new_user)
+            return HttpResponseRedirect("/")
+    else:
+        form = UserCreationForm()
+
+    template = loader.get_template('registration/register.html')
+    return HttpResponse(template.render({'form': form}, request))
+
+def index(request):
+    context = {}
+    return render(request, "index.html", context=context)
